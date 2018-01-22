@@ -66,14 +66,14 @@
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="base.view_partner_form"/>
             <field name="arch" type="xml">
-                <page position="after" string="Sales &amp; Purchases">
-                    <page name="edi_extension" string="EDI">
+                <xpath expr="//notebook[last()]" position="inside">    
+		    <page name="edi_extension" string="EDI">
                         <group>
                             <field name="edi_relevant"/>
                             <field name="edi_flows"/>
                         </group>
                     </page>
-                </page>
+                </xpath>
             </field>
         </record>
         <!-- This record creates the tree view for the partner to select which
