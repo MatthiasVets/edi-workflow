@@ -26,7 +26,7 @@
             <field name="target">inline</field>
         </record>
 
-        <menuitem id="menu_edi_tools_configuration" parent="base.menu_config"
+        <menuitem id="menu_edi_tools_configuration" parent="base.menu_administration"
             sequence="100" action="action_edi_tools_configuration"/>
 
     </data>
