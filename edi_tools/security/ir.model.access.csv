@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+edi_tools_edi_access_partnerflow,edi.tools.edi.user.partnerflow<,edi_tools.model_edi_tools_edi_partnerflow,edi_tools_edi_user,1,1,1,1
+edi_tools_edi_access_flow,edi.tools.edi.user.flow,edi_tools.model_edi_tools_edi_flow,edi_tools_edi_user,1,1,1,1
+edi_tools_access_settings,edi.tools.settings.document,edi_tools.model_edi_tools_settings,edi_tools_edi_user,1,1,1,1
+edi_tools_access_settings_connection,edi.tools.settings.connection.document,edi_tools.model_edi_tools_settings_connection,edi_tools_edi_user,1,1,1,1
+edi_tools_edi_access_document,edi.tools.edi.user.document,edi_tools.model_edi_tools_edi_document,edi_tools_edi_user,1,1,1,1
+edi_tools_edi_access_document_incoming,edi.tools.edi.user.document.incoming,edi_tools.model_edi_tools_edi_document_incoming,edi_tools_edi_user,1,1,1,1
+edi_tools_edi_access_document_outgoing,edi.tools.edi.user.document.outgoing,edi_tools.model_edi_tools_edi_document_outgoing,edi_tools_edi_user,1,1,1,1

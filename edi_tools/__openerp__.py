@@ -31,6 +31,7 @@
         'data/edi_schedulers.xml',
         'data/edi_workflow_incoming.xml',
         'security/security.xml',
+        'security/ir.model.access.csv',
         'views/edi_view.xml',
         'views/res_config.xml',
         'wizard/edi_wizard_ready.xml',
