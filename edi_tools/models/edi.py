@@ -10,7 +10,8 @@ import logging
 import xml.etree.cElementTree as ET
 
 from openerp import api, _
-from openerp.osv import osv, fields
+from openerp.osv import osv
+from odoo import fields, models
 from openerp import netsvc
 from openerp import SUPERUSER_ID
 from openerp import workflow
@@ -27,19 +28,19 @@ _logger = logging.getLogger(__name__)
 #    with how it should be processed. Look for config.xml files in other modules.
 #
 ##############################################################################
-class edi_tools_edi_flow(osv.Model):
+class edi_tools_edi_flow(models.Model):
     _name = "edi.tools.edi.flow"
-    _columns = {
-        'name': fields.char('Flow Name', size=64, required=True, readonly=True),
-        'direction': fields.selection([('in', 'Incoming'), ('out', 'Outgoing')], 'Direction', required=True, readonly=True),
-        'model': fields.char('Model Name', size=64, required=True, readonly=True),
-        'method': fields.char('Method Name', size=64, required=False, readonly=True),
-        'validator': fields.char('Validator Name', size=64, required=False, readonly=True),
-        'partner_resolver': fields.char('Partner Resolver Name', size=64, required=False, readonly=True),
-        'process_after_create': fields.boolean('Automatically process after create'),
-        'allow_duplicates': fields.boolean('Allow duplicate references'),
-        'ignore_partner_ids': fields.many2many('res.partner', 'edi_tools_ignore_partner_rel', 'flow_id', 'partner_id', help="A list of partners that need to be ignored. The content is retrieved from the edi document."),
-    }
+    name = fields.Char('Flow Name', size=64, required=True, readonly=True)
+    direction = fields.Selection([('in', 'Incoming'),
+                                  ('out', 'Outgoing')],
+                                 'Direction', required=True, readonly=True)
+    model = fields.Char('Model Name', size=64, required=True, readonly=True)
+    method = fields.Char('Method Name', size=64, required=False, readonly=True)
+    validator = fields.Char('Validator Name', size=64, required=False, readonly=True)
+    partner_resolver = fields.Char('Partner Resolver Name', size=64, required=False, readonly=True)
+    process_after_create = fields.Boolean('Automatically process after create')
+    allow_duplicates = fields.Boolean('Allow duplicate references')
+    ignore_partner_ids = fields.Many2many('res.partner', 'edi_tools_ignore_partner_rel', 'flow_id', 'partner_id', help="A list of partners that need to be ignored. The content is retrieved from the edi document.")
 
 ##############################################################################
 #
@@ -47,13 +48,11 @@ class edi_tools_edi_flow(osv.Model):
 #    You can temporarily disable a flow so it becomes unavailable.
 #
 ##############################################################################
-class edi_tools_edi_partnerflow(osv.Model):
+class edi_tools_edi_partnerflow(models.Model):
     _name = "edi.tools.edi.partnerflow"
-    _columns = {
-        'partnerflow_id': fields.many2one('res.partner', 'Partner Flow Name', ondelete='cascade', required=True, select=True, readonly=False),
-        'flow_id': fields.many2one('edi.tools.edi.flow', 'Flow', required=True, select=True, readonly=False),
-        'partnerflow_active' : fields.boolean('Active'),
-    }
+    partnerflow_id = fields.Many2one('res.partner', 'Partner Flow Name', ondelete='cascade', required=True, select=True, readonly=False)
+    flow_id = fields.Many2one('edi.tools.edi.flow', 'Flow', required=True, select=True, readonly=False)
+    partnerflow_active = fields.Boolean('Active')
 
 ##############################################################################
 #
@@ -62,7 +61,7 @@ class edi_tools_edi_partnerflow(osv.Model):
 #    processed in many ways and has a given state/state history.
 #
 ##############################################################################
-class edi_tools_edi_document(osv.Model):
+class edi_tools_edi_document(models.Model):
     _name = "edi.tools.edi.document"
     _inherit = ['mail.thread']
     _description = "EDI Document"
@@ -82,22 +81,20 @@ class edi_tools_edi_document(osv.Model):
                 res[document.id] = re.sub('<[^<]+?>', '',document.message_ids[0].body)
         return res
 
-    _columns = {
-        'name' : fields.char('Name', size=256, required=True, readonly=True),
-        'location' : fields.char('File location', size=256, required=True, readonly=False),
-        'partner_id': fields.many2one('res.partner', 'Partner', readonly=True, required=True),
-        'flow_id': fields.many2one('edi.tools.edi.flow', 'EDI Flow', readonly=True, required=True),
-        'message': fields.function(_function_message_get, type='char', string='Message', store=True),
-        'reference' : fields.char('Reference', size=64, required=False, readonly=True),
-        'state': fields.selection([('new', 'New'),
-                                   ('ready', 'Ready'),
-                                   ('processing', 'Processing'),
-                                   ('in_error', 'In Error'),
-                                   ('processed', 'Processed'),
-                                   ('archived', 'Archived')], 'State', required=True, readonly=True),
-        'content' : fields.text('Content',readonly=True, states={'new': [('readonly', False)], 'in_error': [('readonly', False)]}),
-        'create_date':fields.datetime('Creation date'),
-    }
+    name = fields.Char('Name', size=256, required=True, readonly=True)
+    location = fields.Char('File location', size=256, required=True, readonly=False)
+    partner_id = fields.Many2one('res.partner', 'Partner', readonly=True, required=True)
+    flow_id = fields.Many2one('edi.tools.edi.flow', 'EDI Flow', readonly=True, required=True)
+    message = fields.Char(compute='_function_message_get',string='Message', store=True)
+    reference = fields.Char('Reference', size=64, required=False, readonly=True)
+    state = fields.Selection([('new', 'New'),
+                               ('ready', 'Ready'),
+                               ('processing', 'Processing'),
+                               ('in_error', 'In Error'),
+                               ('processed', 'Processed'),
+                               ('archived', 'Archived')], 'State', required=True, readonly=True)
+    content = fields.Text('Content',readonly=True, states={'new': [('readonly', False)], 'in_error': [('readonly', False)]})
+    create_date = fields.Datetime('Creation date')
 
     #def unlink(self, cr, uid, ids, context=None):
     #    ''' edi.tools.edi.document:unlink()
@@ -258,9 +255,7 @@ class edi_tools_edi_document_incoming(osv.osv):
     _description = "Incoming EDI Document"
     _order = "create_date desc"
 
-    _columns = {
-        'processed': fields.boolean('Processed', readonly=True),
-    }
+    processed = fields.Boolean('Processed', readonly=True)
 
     def copy(self, cr, uid, id, default=None, context=None):
         context = context or {}
@@ -616,7 +611,7 @@ class edi_tools_edi_document_incoming(osv.osv):
 #    The outgoing document class represents an outgoing file.
 #
 ##############################################################################
-class edi_tools_edi_document_outgoing(osv.Model):
+class edi_tools_edi_document_outgoing(models.Model):
     _name = "edi.tools.edi.document.outgoing"
     _inherit = ['edi.tools.edi.document']
     _description = "Outgoing EDI Document"

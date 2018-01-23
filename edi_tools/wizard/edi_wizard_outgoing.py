@@ -1,6 +1,7 @@
 from lxml import etree
 
-from openerp import models, fields, api, _
+from odoo import fields
+from openerp import models, api, _
 from openerp.exceptions import except_orm
 
 class edi_tools_edi_wizard_outgoing(models.TransientModel):

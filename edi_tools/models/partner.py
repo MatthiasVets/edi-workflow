@@ -1,18 +1,16 @@
-from openerp.osv import osv, fields
+from odoo import fields, models
 
 import logging
 import os
 
 _logger = logging.getLogger(__name__)
 
-class edi_partner(osv.Model):
+class edi_partner(models.Model):
     _name = "res.partner"
     _inherit = "res.partner"
 
-    _columns = {
-        'edi_relevant' : fields.boolean('EDI Relevant'),
-        'edi_flows': fields.one2many('edi.tools.edi.partnerflow', 'partnerflow_id', 'EDI Flows', readonly=False),
-    }
+    edi_relevant = fields.Boolean(string='EDI Relevant')
+    edi_flows = fields.One2many('edi.tools.edi.partnerflow', 'partnerflow_id', 'EDI Flows', readonly=False)
 
     def create(self, cr, uid, vals, context=None):
         ''' Make sure all required EDI directories are created '''
